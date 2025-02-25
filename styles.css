@@ -1,0 +1,21 @@
+/* Reset */
+*, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+button,
+input,
+select,
+textarea {
+  font-family: inherit;
+  font-size: 100%;
+}
+
+/* Body Styles */
+body {
+    font-family: Helvetica, Arial, system-ui;
+    height: 100vh;
+    line-height: 1.5;
+}
