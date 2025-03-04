@@ -1,8 +1,10 @@
 /* Reset */
-*, *::before, *::after {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 button,
@@ -15,11 +17,19 @@ textarea {
 
 /* Body Styles */
 body {
-    font-family: Helvetica, Arial, system-ui;
-    height: 100vh;
-    line-height: 1.5;
+  font-family: Helvetica, Arial, system-ui;
+  height: 100vh;
+  line-height: 1.5;
 }
 
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 2rem;
+}
 
 .board {
   display: grid;
@@ -30,6 +40,7 @@ body {
   border: 1px solid black;
   gap: 2px;
   padding: 2px;
+  margin: 2rem;
 }
 
 .cell {
