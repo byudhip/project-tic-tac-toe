@@ -94,11 +94,13 @@ function GameController(
       color: "blue",
     },
   ];
-  const setPlayerTokens = (chosenToken) => {
+  const setPlayerAttributes = (chosenToken, playerName) => {
+    players[0].name = playerName;
     players[0].token = chosenToken;
     players[1].token = chosenToken === "O" ? "X" : "O";
     players[0].color = chosenToken === "O" ? "red" : "blue";
     players[1].color = chosenToken === "O" ? "blue" : "red";
+    console.log(players[0].name);
   };
 
   let activePlayer = players[0];
@@ -177,22 +179,24 @@ function GameController(
     return null;
   };
 
-    const gameFinished = () => {
-      const modal = document.createElement("dialog");
-      modal.classList.add("game-modal");
-      modal.innerHTML = `
+  const gameFinished = () => {
+    const modal = document.createElement("dialog");
+    modal.classList.add("game-modal");
+    modal.innerHTML = `
           <form method="dialog">
-            <p class="player-prompt">${getResult()}</p>
-            <p> Reset game? </p>
-            <button class="confirm-reset" value="confirm-reset">Confirm</button>
+            <p>${getResult()}</p>
+            <p>Reset game? </p>
+            <button>Confirm</button>
           </form>
         `;
-        document.body.appendChild(modal);
-      modal.showModal();
-      modal.addEventListener("close", () => {
-        document.querySelector(".turn").textContent = "Waiting for token decision...";
-        resetGame()})
-    };
+    document.body.appendChild(modal);
+    modal.showModal();
+    modal.addEventListener("close", () => {
+      document.querySelector(".turn").textContent =
+        "Waiting for player details";
+      resetGame();
+    });
+  };
 
   const resetGame = () => {
     board.resetBoard();
@@ -231,10 +235,10 @@ function GameController(
   };
   const getResult = () => result;
   board.newGameModal();
-  setResult("Waiting for token decision...");
+  setResult("Waiting for player details");
 
   return {
-    setPlayerTokens,
+    setPlayerAttributes,
     resetGame,
     playRound,
     getActivePlayer,
@@ -250,6 +254,7 @@ function ScreenController() {
   const playerTurnDiv = document.querySelector(".turn");
   const boardDiv = document.querySelector(".board");
   const modal = document.querySelector(".game-modal");
+  const username = document.querySelector("#username");
 
   const updateScreen = () => {
     boardDiv.textContent = "";
@@ -285,11 +290,12 @@ function ScreenController() {
   function clickHandlerModal(e) {
     if (e.target.classList.contains("submit")) {
       const chosenToken = e.target.value;
+      const playerName = username.value || "Player One";
       modal.close();
-      game.setPlayerTokens(chosenToken);
-      game.setResult(`Player One's turn`);
+      game.setPlayerAttributes(chosenToken, playerName);
+      game.setResult(`${playerName}'s turn`);
       updateScreen();
-    } 
+    }
   }
 
   boardDiv.addEventListener("click", clickHandlerBoard);
