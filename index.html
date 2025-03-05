@@ -13,7 +13,14 @@
       <div class="board"></div>
       <dialog class="game-modal">
         <form method="dialog">
-          <p class="player-prompt">Choose your token:</p>
+          <p>Choose your token:</p>
+          <label for="username"
+            ><input
+              type="text"
+              id="username"
+              minlength="3"
+              placeholder="Enter your name here"
+          /></label>
           <button class="submit" value="O">O</button>
           <button class="submit" value="X">X</button>
         </form>
