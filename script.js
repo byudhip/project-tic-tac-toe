@@ -215,7 +215,7 @@ function GameController(
     }
     const winner = checkForWinner();
     if (winner) {
-      setResult(`Player ${winner} wins!`);
+      setResult(`${getActivePlayer().name} wins!`);
       console.log(`${result} is win`);
       gameFinished();
       return;
