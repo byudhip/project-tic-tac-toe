@@ -87,6 +87,7 @@ p {
   width: 5rem;
   height: 3rem;
   background-color: #F4EEA9;
+  cursor: pointer;
 }
 
 button[value="O"] {
