@@ -94,8 +94,9 @@ function GameController(
       color: "blue",
     },
   ];
-  const setPlayerAttributes = (chosenToken, playerName) => {
-    players[0].name = playerName;
+  const setPlayerAttributes = (chosenToken, playerOneName, playerTwoName) => {
+    players[0].name = playerOneName;
+    players[1].name = playerTwoName;
     players[0].token = chosenToken;
     players[1].token = chosenToken === "O" ? "X" : "O";
     players[0].color = chosenToken === "O" ? "red" : "blue";
@@ -254,7 +255,8 @@ function ScreenController() {
   const playerTurnDiv = document.querySelector(".turn");
   const boardDiv = document.querySelector(".board");
   const modal = document.querySelector(".game-modal");
-  const username = document.querySelector("#username");
+  const playerOneName = document.querySelector("#player-one-name");
+  const playerTwoName = document.querySelector("#player-two-name");
 
   const updateScreen = () => {
     boardDiv.textContent = "";
@@ -290,10 +292,11 @@ function ScreenController() {
   function clickHandlerModal(e) {
     if (e.target.classList.contains("submit")) {
       const chosenToken = e.target.value;
-      const playerName = username.value || "Player One";
+      const p1 = playerOneName.value || "Player One";
+      const p2 = playerTwoName.value || "Player Two";
       modal.close();
-      game.setPlayerAttributes(chosenToken, playerName);
-      game.setResult(`${playerName}'s turn`);
+      game.setPlayerAttributes(chosenToken, p1, p2);
+      game.setResult(`${p1}'s turn`);
       updateScreen();
     }
   }
