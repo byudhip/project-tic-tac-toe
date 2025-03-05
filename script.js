@@ -189,12 +189,13 @@ function GameController(
         `;
         document.body.appendChild(modal);
       modal.showModal();
-      modal.addEventListener("close", () => resetGame())
+      modal.addEventListener("close", () => {
+        document.querySelector(".turn").textContent = "Waiting for token decision...";
+        resetGame()})
     };
 
   const resetGame = () => {
     board.resetBoard();
-    setResult("Waiting for token decision...");
     board.newGameModal();
   };
 
@@ -264,9 +265,9 @@ function ScreenController() {
         cellButton.textContent = cell.getValue();
         const player = game
           .getPlayers()
-          .find((p) => p.token === cell.getValue());
+          .find((p) => p.token === cell.getValue()); //get the player object according to their token
         if (player) {
-          cellButton.style.color = player.color;
+          cellButton.style.color = player.color; // color the cell text according to color property in player object
         }
         boardDiv.appendChild(cellButton);
       });
