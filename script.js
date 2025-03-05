@@ -49,9 +49,16 @@ function Gameboard() {
   const newGameModal = () => {
     const modal = document.querySelector(".game-modal");
     modal.showModal();
-  }
+  };
 
-  return { getBoard, placeToken, printBoard, isBoardFilled, resetBoard, newGameModal };
+  return {
+    getBoard,
+    placeToken,
+    printBoard,
+    isBoardFilled,
+    resetBoard,
+    newGameModal,
+  };
 }
 
 function Cell() {
@@ -74,26 +81,25 @@ function GameController(
 ) {
   const board = Gameboard();
   const gameBoard = board.getBoard(); //to get the actual value of the 2D array
-  
+
   const players = [
     {
       name: playerOneName,
       token: "O",
-      color: "red"
+      color: "red",
     },
     {
       name: playerTwoName,
       token: "X",
-      color: "blue"
+      color: "blue",
     },
   ];
-  const setPlayerTokens = chosenToken => {
+  const setPlayerTokens = (chosenToken) => {
     players[0].token = chosenToken;
-    players[1].token = chosenToken === "O" ? "X" : "O"
+    players[1].token = chosenToken === "O" ? "X" : "O";
     players[0].color = chosenToken === "O" ? "red" : "blue";
     players[1].color = chosenToken === "O" ? "blue" : "red";
-
-  }
+  };
 
   let activePlayer = players[0];
 
@@ -101,57 +107,59 @@ function GameController(
     activePlayer = activePlayer === players[0] ? players[1] : players[0];
   };
   const getActivePlayer = () => activePlayer;
+  const getPlayers = () => players;
   let result;
+  const setResult = (message) => {
+    result = message;
+  };
   const printNewRound = () => {
-    result = `${getActivePlayer().name}'s turn`;
+    setResult(`${getActivePlayer().name}'s turn`);
     board.printBoard();
     console.log(`${result}`);
-    
   };
-
   const checkForWinner = () => {
     const winningPatterns = [
       [
         [0, 0],
         [0, 1],
-        [0, 2], 
+        [0, 2],
       ],
       [
         [1, 0],
         [1, 1],
-        [1, 2], 
+        [1, 2],
       ],
       [
         [2, 0],
         [2, 1],
-        [2, 2], 
+        [2, 2],
       ],
 
       [
         [0, 0],
         [1, 0],
-        [2, 0], 
+        [2, 0],
       ],
       [
         [0, 1],
         [1, 1],
-        [2, 1], 
+        [2, 1],
       ],
       [
         [0, 2],
         [1, 2],
-        [2, 2], 
+        [2, 2],
       ],
 
       [
         [0, 0],
         [1, 1],
-        [2, 2], 
+        [2, 2],
       ],
       [
         [0, 2],
         [1, 1],
-        [2, 0], 
+        [2, 0],
       ],
     ];
     for (const pattern of winningPatterns) {
@@ -160,22 +168,35 @@ function GameController(
       const first = boardState[a[0]][a[1]].getValue();
       const second = boardState[b[0]][b[1]].getValue();
       const third = boardState[c[0]][c[1]].getValue();
-      if (first !== "" && first === second && first === third
-      ) {
+      if (first !== "" && first === second && first === third) {
         console.log(`${first} is the winner`);
-        return first === "O" ? "One": "Two";
-        
+        return first === "O" ? "One" : "Two";
       }
     }
-    console.log("No winner found, resuming the match")
+    console.log("No winner found, resuming the match");
     return null;
   };
 
+    const gameFinished = () => {
+      const modal = document.createElement("dialog");
+      modal.classList.add("game-modal");
+      modal.innerHTML = `
+          <form method="dialog">
+            <p class="player-prompt">${getResult()}</p>
+            <p> Reset game? </p>
+            <button class="confirm-reset" value="confirm-reset">Confirm</button>
+          </form>
+        `;
+        document.body.appendChild(modal);
+      modal.showModal();
+      modal.addEventListener("close", () => resetGame())
+    };
+
   const resetGame = () => {
     board.resetBoard();
-    result = "";
+    setResult("Waiting for token decision...");
     board.newGameModal();
-  }
+  };
 
   const playRound = (row, column) => {
     console.log("board state before token placement");
@@ -194,14 +215,14 @@ function GameController(
     }
     const winner = checkForWinner();
     if (winner) {
-      result = `Player ${winner} wins!`;
+      setResult(`Player ${winner} wins!`);
       console.log(`${result} is win`);
-      resetGame();
+      gameFinished();
       return;
     }
     if (board.isBoardFilled()) {
-      result = "It's a tie";     
-      resetGame();
+      setResult("It's a tie");
+      gameFinished();
       return;
     }
     switchPlayerTurn();
@@ -209,13 +230,17 @@ function GameController(
   };
   const getResult = () => result;
   board.newGameModal();
+  setResult("Waiting for token decision...");
 
   return {
     setPlayerTokens,
+    resetGame,
     playRound,
     getActivePlayer,
+    getPlayers,
     gameBoard,
-    getResult
+    setResult,
+    getResult,
   };
 }
 
@@ -229,7 +254,7 @@ function ScreenController() {
     boardDiv.textContent = "";
     const board = game.gameBoard;
     playerTurnDiv.textContent = game.getResult();
-    
+
     board.forEach((row, rowIndex) => {
       row.forEach((cell, colIndex) => {
         const cellButton = document.createElement("button");
@@ -237,6 +262,12 @@ function ScreenController() {
         cellButton.dataset.column = colIndex;
         cellButton.dataset.row = rowIndex;
         cellButton.textContent = cell.getValue();
+        const player = game
+          .getPlayers()
+          .find((p) => p.token === cell.getValue());
+        if (player) {
+          cellButton.style.color = player.color;
+        }
         boardDiv.appendChild(cellButton);
       });
     });
@@ -246,23 +277,22 @@ function ScreenController() {
     const selectedColumn = e.target.dataset.column;
     const selectedRow = e.target.dataset.row;
     if (!selectedColumn && !selectedRow) return;
-
-    const activePlayer = game.getActivePlayer();
-    e.target.style.color = activePlayer.color;
     game.playRound(selectedRow, selectedColumn);
-    updateScreen(); 
+    updateScreen();
   }
 
-  function clickHandlerModal (e) {
+  function clickHandlerModal(e) {
     if (e.target.classList.contains("submit")) {
       const chosenToken = e.target.value;
       modal.close();
       game.setPlayerTokens(chosenToken);
-    }
+      game.setResult(`Player One's turn`);
+      updateScreen();
+    } 
   }
 
   boardDiv.addEventListener("click", clickHandlerBoard);
-  modal.addEventListener("click", clickHandlerModal)
+  modal.addEventListener("click", clickHandlerModal);
 
   updateScreen();
 }
