@@ -31,7 +31,7 @@ h1 {
   color: #519259;
 }
 
-p {
+p, label {
   color: white;
 }
 
