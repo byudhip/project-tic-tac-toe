@@ -46,7 +46,12 @@ function Gameboard() {
     }
   };
 
-  return { getBoard, placeToken, printBoard, isBoardFilled, resetBoard };
+  const newGameModal = () => {
+    const modal = document.querySelector(".game-modal");
+    modal.showModal();
+  }
+
+  return { getBoard, placeToken, printBoard, isBoardFilled, resetBoard, newGameModal };
 }
 
 function Cell() {
@@ -74,12 +79,21 @@ function GameController(
     {
       name: playerOneName,
       token: "O",
+      color: "red"
     },
     {
       name: playerTwoName,
       token: "X",
+      color: "blue"
     },
   ];
+  const setPlayerTokens = chosenToken => {
+    players[0].token = chosenToken;
+    players[1].token = chosenToken === "O" ? "X" : "O"
+    players[0].color = chosenToken === "O" ? "red" : "blue";
+    players[1].color = chosenToken === "O" ? "blue" : "red";
+
+  }
 
   let activePlayer = players[0];
 
@@ -100,44 +114,44 @@ function GameController(
       [
         [0, 0],
         [0, 1],
-        [0, 2], //works
+        [0, 2], 
       ],
       [
         [1, 0],
         [1, 1],
-        [1, 2], //works
+        [1, 2], 
       ],
       [
         [2, 0],
         [2, 1],
-        [2, 2], //doesn't work
+        [2, 2], 
       ],
 
       [
         [0, 0],
         [1, 0],
-        [2, 0], //works
+        [2, 0], 
       ],
       [
         [0, 1],
         [1, 1],
-        [2, 1], //works
+        [2, 1], 
       ],
       [
         [0, 2],
         [1, 2],
-        [2, 2], //doesn't work
+        [2, 2], 
       ],
 
       [
         [0, 0],
         [1, 1],
-        [2, 2], //works
+        [2, 2], 
       ],
       [
         [0, 2],
         [1, 1],
-        [2, 0], //works
+        [2, 0], 
       ],
     ];
     for (const pattern of winningPatterns) {
@@ -156,6 +170,12 @@ function GameController(
     console.log("No winner found, resuming the match")
     return null;
   };
+
+  const resetGame = () => {
+    board.resetBoard();
+    result = "";
+    board.newGameModal();
+  }
 
   const playRound = (row, column) => {
     console.log("board state before token placement");
@@ -176,23 +196,22 @@ function GameController(
     if (winner) {
       result = `Player ${winner} wins!`;
       console.log(`${result} is win`);
-      // board.resetBoard();
-      // printNewRound();
+      resetGame();
       return;
     }
     if (board.isBoardFilled()) {
       result = "It's a tie";     
-      // board.resetBoard();
-      // printNewRound();
+      resetGame();
       return;
     }
     switchPlayerTurn();
     printNewRound();
   };
   const getResult = () => result;
-  printNewRound();
+  board.newGameModal();
 
   return {
+    setPlayerTokens,
     playRound,
     getActivePlayer,
     gameBoard,
@@ -204,12 +223,13 @@ function ScreenController() {
   const game = GameController();
   const playerTurnDiv = document.querySelector(".turn");
   const boardDiv = document.querySelector(".board");
+  const modal = document.querySelector(".game-modal");
 
   const updateScreen = () => {
     boardDiv.textContent = "";
     const board = game.gameBoard;
     playerTurnDiv.textContent = game.getResult();
-
+    
     board.forEach((row, rowIndex) => {
       row.forEach((cell, colIndex) => {
         const cellButton = document.createElement("button");
@@ -226,10 +246,23 @@ function ScreenController() {
     const selectedColumn = e.target.dataset.column;
     const selectedRow = e.target.dataset.row;
     if (!selectedColumn && !selectedRow) return;
+
+    const activePlayer = game.getActivePlayer();
+    e.target.style.color = activePlayer.color;
     game.playRound(selectedRow, selectedColumn);
     updateScreen(); 
   }
+
+  function clickHandlerModal (e) {
+    if (e.target.classList.contains("submit")) {
+      const chosenToken = e.target.value;
+      modal.close();
+      game.setPlayerTokens(chosenToken);
+    }
+  }
+
   boardDiv.addEventListener("click", clickHandlerBoard);
+  modal.addEventListener("click", clickHandlerModal)
 
   updateScreen();
 }
