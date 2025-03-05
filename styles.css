@@ -24,6 +24,15 @@ body {
   font-family: Helvetica, Arial, system-ui;
   height: 100vh;
   line-height: 1.5;
+  background-color: #064635;
+}
+
+h1 {
+  color: #519259;
+}
+
+p {
+  color: white;
 }
 
 .container {
@@ -40,10 +49,11 @@ body {
   width: 500px;
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: repeat(3, 1fr);
-  border: 1px solid black;
+  /* border: 1px solid black; */
   gap: 2px;
   padding: 2px;
   margin: 2rem;
+  
 }
 
 .cell {
@@ -51,18 +61,22 @@ body {
   justify-content: center;
   align-items: center;
   text-align: center;
-  font-size: 2rem;
+  font-size: 4rem;
   border: 1px solid grey;
   cursor: pointer;
+  background-color: #F0BB62;
 }
 
 .game-modal {
   position: fixed;
   padding: 1rem;
+  width: 20rem;
+  text-align: center;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   border: 1px solid grey;
+  background-color: #A62A2A;
 }
 
 .game-modal * {
@@ -70,6 +84,15 @@ body {
 }
 
 .game-modal button {
-  width: 3rem;
+  width: 5rem;
   height: 3rem;
+  background-color: #F4EEA9;
+}
+
+button[value="O"] {
+  color: red;
+}
+
+button[value="X"] {
+  color: blue;
 }
